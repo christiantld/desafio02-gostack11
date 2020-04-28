@@ -14,18 +14,22 @@ function App() {
       setRepositories(response.data);
     }
     loadRepos();
-  }, [repositories]);
+  }, []);
 
   async function handleAddRepository() {
-    // TODO
+    const response = await api.post("/repositories", {
+      title: `Novo Repositorio ${Date.now()}`,
+      url: "www.repositorio.com",
+      techs: ["VueJs"],
+    });
+
+    setRepositories([...repositories, response.data]);
   }
 
   async function handleRemoveRepository(id) {
     await api.delete(`/repositories/${id}`);
 
-    const response = await api.get("/repositories");
-
-    setRepositories(response.data);
+    setRepositories(repositories.filter((repository) => repository.id !== id));
   }
 
   return (
@@ -33,7 +37,7 @@ function App() {
       <ul data-testid="repository-list">
         {repositories.map((repository) => (
           <li key={repository.id}>
-            {repository.name}
+            {repository.title}
             <button onClick={() => handleRemoveRepository(repository.id)}>
               Remover
             </button>
